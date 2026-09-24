@@ -3,19 +3,10 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { parse } from "csv-parse/sync";
 import { pool } from "./db.js";
+import { isValidCategory } from "./categories.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, "..");
-
-const VALID_CATEGORIES = [
-  "order_status",
-  "proof_change",
-  "artwork_issue",
-  "quality_complaint",
-  "billing",
-  "other",
-] as const;
-type Category = (typeof VALID_CATEGORIES)[number];
 
 interface TicketRow {
   id: string;
@@ -65,9 +56,9 @@ function validate(tickets: TicketRow[], labels: LabelRow[]): string[] {
 
     if (!l.category?.trim()) {
       errors.push(`${prefix}: empty category`);
-    } else if (!VALID_CATEGORIES.includes(l.category.trim() as Category)) {
+    } else if (!isValidCategory(l.category.trim())) {
       errors.push(
-        `${prefix}: invalid category "${l.category}" (must be one of: ${VALID_CATEGORIES.join(", ")} — see docs/labeling-guide.md)`
+        `${prefix}: invalid category "${l.category}" (see docs/labeling-guide.md for the allowed categories)`
       );
     }
 

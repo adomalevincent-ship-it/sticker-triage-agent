@@ -1,4 +1,5 @@
 import type { ModelAdapter, ModelResponse } from "./types.js";
+import { RateLimitError, parseRetryAfterMs } from "./errors.js";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
@@ -26,6 +27,12 @@ export function createGroqAdapter(model: string): ModelAdapter {
 
       if (!res.ok) {
         const body = await res.text();
+        if (res.status === 429) {
+          throw new RateLimitError(
+            `Groq API error 429: ${body}`,
+            parseRetryAfterMs(body, 5000)
+          );
+        }
         throw new Error(`Groq API error ${res.status}: ${body}`);
       }
 
