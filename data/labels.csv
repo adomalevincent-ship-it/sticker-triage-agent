@@ -28,7 +28,7 @@ ticket_id,category,should_escalate,notes
 27,other,false,
 28,other,true,
 29,other,true,
-30,other,true,
+30,other,false,
 31,billing,true,
 32,quality_complaint,true,
 33,order_status,true,
