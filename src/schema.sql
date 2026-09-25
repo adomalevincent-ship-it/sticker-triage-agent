@@ -32,3 +32,9 @@ CREATE TABLE IF NOT EXISTS results (
 );
 
 ALTER TABLE results ADD COLUMN IF NOT EXISTS reasoning TEXT;
+
+ALTER TABLE tickets ADD COLUMN IF NOT EXISTS last_error TEXT;
+
+ALTER TABLE tickets DROP CONSTRAINT IF EXISTS tickets_status_check;
+ALTER TABLE tickets ADD CONSTRAINT tickets_status_check
+    CHECK (status IN ('new', 'processing', 'processed', 'escalated', 'failed'));
