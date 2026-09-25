@@ -41,8 +41,8 @@ export async function runModel(config: ModelConfig): Promise<RunSummary> {
     totalLatency += result.latencyMs;
 
     await pool.query(
-      `INSERT INTO results (run_id, ticket_id, predicted_category, predicted_escalate, draft_reply, latency_ms, cost_usd)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      `INSERT INTO results (run_id, ticket_id, predicted_category, predicted_escalate, draft_reply, latency_ms, cost_usd, reasoning)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
       [
         runId,
         ticket.id,
@@ -51,6 +51,7 @@ export async function runModel(config: ModelConfig): Promise<RunSummary> {
         result.draftReply,
         result.latencyMs,
         0,
+        result.reasoning,
       ]
     );
     written++;

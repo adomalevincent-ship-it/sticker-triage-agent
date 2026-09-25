@@ -27,7 +27,7 @@ interface RunRow {
   started_at: Date;
 }
 
-interface ScoreCard {
+export interface ScoreCard {
   runId: number;
   modelName: string;
   totalTickets: number;
@@ -50,7 +50,7 @@ interface ScoreCard {
   predictions: Map<number, { category: Category | null; escalate: boolean | null }>;
 }
 
-async function loadLabels(): Promise<Map<number, LabelRow>> {
+export async function loadLabels(): Promise<Map<number, LabelRow>> {
   const res = await pool.query<LabelRow>(
     "SELECT ticket_id, category, should_escalate FROM labels"
   );
@@ -59,14 +59,14 @@ async function loadLabels(): Promise<Map<number, LabelRow>> {
   return map;
 }
 
-async function loadRuns(): Promise<RunRow[]> {
+export async function loadRuns(): Promise<RunRow[]> {
   const res = await pool.query<RunRow>(
     "SELECT id, model_name, started_at FROM runs ORDER BY id"
   );
   return res.rows;
 }
 
-async function loadResults(runId: number): Promise<ResultRow[]> {
+export async function loadResults(runId: number): Promise<ResultRow[]> {
   const res = await pool.query<ResultRow>(
     `SELECT ticket_id, predicted_category, predicted_escalate, latency_ms, cost_usd
      FROM results WHERE run_id = $1 ORDER BY ticket_id`,
@@ -114,7 +114,7 @@ function computeKappa(pairs: { truth: Category; pred: Category }[]): number | nu
   return (po - pe) / denom;
 }
 
-function scoreRun(
+export function scoreRun(
   run: RunRow,
   results: ResultRow[],
   labels: Map<number, LabelRow>
@@ -209,11 +209,11 @@ function scoreRun(
   };
 }
 
-function pct(n: number): string {
+export function pct(n: number): string {
   return `${(n * 100).toFixed(1)}%`;
 }
 
-function fmtKappa(k: number | null): string {
+export function fmtKappa(k: number | null): string {
   return k === null ? "n/a" : k.toFixed(3);
 }
 
@@ -426,7 +426,9 @@ async function main() {
   await pool.end();
 }
 
-main().catch((err) => {
-  console.error("Scoring failed:", err);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error("Scoring failed:", err);
+    process.exit(1);
+  });
+}

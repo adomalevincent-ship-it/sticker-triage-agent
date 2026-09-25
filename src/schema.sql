@@ -30,3 +30,5 @@ CREATE TABLE IF NOT EXISTS results (
     cost_usd NUMERIC(10, 6),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE results ADD COLUMN IF NOT EXISTS reasoning TEXT;
