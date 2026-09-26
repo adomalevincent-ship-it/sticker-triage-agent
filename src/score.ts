@@ -1,3 +1,13 @@
+// Scores every run in `runs` against the human labels in `labels`, per run:
+// category accuracy, Cohen's kappa, an escalation breakdown, latency/cost,
+// and a confusion matrix. Missed and false escalations are counted as
+// separate numbers rather than one blended "escalation accuracy" because
+// they aren't equally costly: a missed escalation lets an auto-reply reach
+// a customer who needed a human, while a false one just costs a human a
+// few seconds of review. Kappa is reported alongside raw accuracy because
+// accuracy alone doesn't account for how skewed the label distribution is —
+// kappa answers whether the model is actually better than guessing the
+// majority category.
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
